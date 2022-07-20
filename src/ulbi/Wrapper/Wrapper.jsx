@@ -1,21 +1,40 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import s from "./Wrapper.module.css";
 import ToDoInput from "../ToDoInput/ToDoInput";
 import Select from "../Select/Select";
+import { Finder } from "./../Finder/Finder";
 
 const Wrapper = (props) => {
   const [currentValue, setCurrentValue] = useState("");
   const [todos, setTodos] = useState([]);
   const [selectedSort, setSelectedSort] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleChangeInput = (inputText) => {
     setCurrentValue(inputText);
   };
 
+  const sortedTodos = useMemo(() => {
+    console.log("sortedTodos");
+    if (selectedSort) {
+      return [...todos].sort((a, b) => {
+        return a[selectedSort].localeCompare(b[selectedSort]);
+      });
+    }
+    return todos;
+  }, [todos, selectedSort]);
+
+  const sortedAndSearchedTodos = useMemo(() => {
+    console.log("sortedAndSearchedTodos");
+    return sortedTodos.filter((elem) =>
+      elem.value.toLowerCase().includes(searchQuery)
+    );
+  }, [searchQuery, sortedTodos]);
+
   const handleAddTask = (inputValue) => {
     if (inputValue) {
       const newTodo = {
-        id: Math.round(Math.random() * 100),
+        id: Math.round(Math.random() * 1000000),
         value: inputValue,
       };
       setTodos([...todos, newTodo]);
@@ -34,17 +53,13 @@ const Wrapper = (props) => {
     setTodos([...todos.filter((item) => id !== item.id)]);
   };
 
-  const sortPosts = (sort) => {
-    console.log(typeof(todos[0][sort]))
-    setSelectedSort(sort);
-    setTodos([...todos].sort((a, b) => {return a[sort].localeCompare(b[sort])}));
-  };
+  console.log(sortedAndSearchedTodos)
 
   return (
     <div className={s.wrapper}>
       <Select
         value={selectedSort}
-        onChange={sortPosts}
+        onChange={setSelectedSort}
         defaultValue="Sort..."
         options={[
           {
@@ -53,9 +68,10 @@ const Wrapper = (props) => {
           },
         ]}
       />
+      <Finder value={searchQuery} onChange={setSearchQuery} />
       <ToDoInput
         currentValue={currentValue}
-        todos={todos}
+        todos={sortedAndSearchedTodos}
         handleChangeInput={handleChangeInput}
         handleAddTask={handleAddTask}
         handleKeyDownEnter={handleKeyDownEnter}

@@ -2,10 +2,8 @@ import React from "react";
 
 const Select = ({ options, defaultValue, value, onChange }) => {
   return (
-    <select value={value} onChange={e => onChange(e.target.value)}>
-      <option value={defaultValue}>
-        {defaultValue}
-      </option>
+    <select value={value} onChange={e => onChange((e.target.value))}>
+      <option value=''>{defaultValue}</option>
       {options.map((opt) => {
         return (
           <option key={opt.value} value={opt.value}>
