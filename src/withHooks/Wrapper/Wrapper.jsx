@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import css from "./Wrapper.module.css";
-import { ToDoItem } from "../ToDoItem/ToDoItem";
+import { ToDoItem } from "../ToDoItem";
 
 export const Wrapper = (props) => {
   const [currentValue, setCurrentValue] = useState("");
@@ -35,9 +35,7 @@ export const Wrapper = (props) => {
         value: currentValue,
         complete: false,
       };
-      const doneTodos = todos.filter((item) => item.complete === true);
-      const unDoneTodos = todos.filter((item) => item.complete === false);
-      setTodos([...unDoneTodos, newTodo, ...doneTodos]);
+      setTodos([newTodo, ...todos]);
     }
     setCurrentValue("");
   };
@@ -75,7 +73,7 @@ export const Wrapper = (props) => {
             type="text"
             className={css.input__task}
             value={currentValue}
-            onKeyPress={(e) => handleKeyDownEnter(e, currentValue)}
+            onKeyPress={handleKeyDownEnter}
             onChange={handleChangeInput}
           />
           <button className={css.add__task} onClick={handleAddTask}>
