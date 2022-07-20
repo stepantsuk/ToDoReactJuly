@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import s from "./Wrapper.module.css"
+import css from "./Wrapper.module.css";
 import { ToDoItem } from "../ToDoItem/ToDoItem";
 
-const Wrapper = (props) => {
+export const Wrapper = (props) => {
   const [currentValue, setCurrentValue] = useState("");
   const [todos, setTodos] = useState(() => {
     return JSON.parse(localStorage.getItem("todos")) || [];
@@ -24,30 +24,27 @@ const Wrapper = (props) => {
     ];
   };
 
-  const handleChangeInput = (inputText) => {
-    setCurrentValue(inputText);
+  const handleChangeInput = (e) => {
+    setCurrentValue(e.currentTarget.value);
   };
 
-  const handleAddTask = (inputValue) => {
-    if (inputValue) {
+  const handleAddTask = () => {
+    if (currentValue) {
       const newTodo = {
         id: Math.round(Math.random() * 10000),
-        value: inputValue,
+        value: currentValue,
         complete: false,
       };
-      setTodos(()=>{
-        const doneTodos = todos.filter((item) => item.complete === true);
-        const unDoneTodos = todos.filter((item) => item.complete === false);
-        return [...unDoneTodos, newTodo, ...doneTodos]
-      });
+      const doneTodos = todos.filter((item) => item.complete === true);
+      const unDoneTodos = todos.filter((item) => item.complete === false);
+      setTodos([...unDoneTodos, newTodo, ...doneTodos]);
     }
     setCurrentValue("");
   };
 
-  const handleKeyDownEnter = (e, value) => {
+  const handleKeyDownEnter = (e) => {
     if (e.key === "Enter") {
-      console.log("Enter", value)
-      handleAddTask(value);
+      handleAddTask();
     }
   };
 
@@ -56,14 +53,13 @@ const Wrapper = (props) => {
   };
 
   const handleToggle = (id) => {
-    setTodos(() => {
-      const changedTodos = [
-        ...todos.map((item) =>
-          item.id === id ? { ...item, complete: !item.complete } : { ...item }
-        ),
-      ];
-      return filterTasks(changedTodos);
-    });
+    setTodos(
+      filterTasks(
+        todos.map((item) =>
+          item.id === id ? { ...item, complete: !item.complete } : item
+        )
+      )
+    );
   };
 
   useEffect(() => {
@@ -71,44 +67,36 @@ const Wrapper = (props) => {
   }, [todos]);
 
   return (
-    <div className={s.wrapper}>
-      <div className={s.todo}>
-        <h1 className={s.todo__title}>Мой список дел</h1>
-        <div className={s.todo__input}>
+    <div className={css.wrapper}>
+      <div className={css.todo}>
+        <h1 className={css.todo__title}>Мой список дел</h1>
+        <div className={css.todo__input}>
           <input
             type="text"
-            className={s.input__task}
+            className={css.input__task}
             value={currentValue}
-            onKeyPress={(e) =>
-              handleKeyDownEnter(e, currentValue)
-            }
-            onChange={(e) => handleChangeInput(e.currentTarget.value)}
+            onKeyPress={(e) => handleKeyDownEnter(e, currentValue)}
+            onChange={handleChangeInput}
           />
-          <button
-            className={s.add__task}
-            onClick={() => handleAddTask(currentValue)}
-          >
+          <button className={css.add__task} onClick={handleAddTask}>
             Добавить
           </button>
         </div>
-        <ul className={s.todo__list}>
-          {todos.map((item) => {
-            return (
-              <ToDoItem
-                key={item.id}
-                task={item}
-                handleDeleteTask={handleDeleteTask}
-                handleToggle={handleToggle}
-              />
-            );
-          })}
+        <ul className={css.todo__list}>
+          {todos.map((item) => (
+            <ToDoItem
+              key={item.id}
+              task={item}
+              handleDeleteTask={handleDeleteTask}
+              handleToggle={handleToggle}
+            />
+          ))}
         </ul>
         <div>
-          Итого:
-          <span>{" " + todos.length}</span>
+          Итого: <span>{todos.length}</span>
         </div>
       </div>
     </div>
   );
 };
-export default Wrapper;
+
