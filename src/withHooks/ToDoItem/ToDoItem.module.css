@@ -1,0 +1,35 @@
+.todo__item {
+  display: flex;
+  margin-bottom: 5px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.active {
+  background-color: rgb(213, 172, 206);
+}
+
+.todo__text {
+  min-height: 25px;
+  flex: 1;
+  max-width: 71%;
+  word-break: break-all;
+  margin-right: 5px;
+  border-radius: 2px;
+  padding-left: 2px;
+  border: solid white;
+}
+
+.todo__complete {
+  margin: 0;
+  margin-right: 5px;
+  width: 25px;
+  height: 25px;
+  outline: none;
+}
+
+.delete__task {
+  height: 25px;
+  border-radius: 2px;
+  background-color: rgb(239, 55, 55);
+}

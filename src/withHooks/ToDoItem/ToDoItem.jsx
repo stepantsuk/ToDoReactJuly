@@ -1,19 +1,23 @@
+import css from "./ToDoItem.module.css";
+
 export const ToDoItem = ({ task, handleDeleteTask, handleToggle }) => {
   return (
-    <li className="todo__item">
-      <div className={task.complete ? "todo__text active" : "todo__text"}>
+    <li className={css.todo__item}>
+      <div
+        className={task.complete ? `${css.todo__text} ${css.active}` : css.todo__text}
+      >
         {task.value}
       </div>
       <input
         type="checkbox"
-        className="todo__complete"
+        className={css.todo__complete}
         checked={task.complete}
         onChange={() => {
           handleToggle(task.id);
         }}
       />
       <button
-        className="delete__task"
+        className={css.delete__task}
         onClick={() => handleDeleteTask(task.id)}
       >
         DELETE

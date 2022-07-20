@@ -2,7 +2,7 @@ import React from "react";
 
 import { ToDoItem } from "./todoItem";
 
-class ToDoWrapper extends React.Component {
+class ToDoWrapperClasses extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -117,9 +117,9 @@ class ToDoWrapper extends React.Component {
                 })
               : null}
           </ul>
-          <div className="counter">
+          <div>
             Итого:
-            <span className="counter__value">
+            <span>
               {" " + this.state.todos.length}
             </span>
           </div>
@@ -129,4 +129,4 @@ class ToDoWrapper extends React.Component {
   }
 }
 
-export default ToDoWrapper;
+export default ToDoWrapperClasses;
