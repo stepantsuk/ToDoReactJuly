@@ -1,8 +1,9 @@
 import React from "react";
+import s from "./Select.module.css";
 
 const Select = ({ options, defaultValue, value, onChange }) => {
   return (
-    <select value={value} onChange={e => onChange((e.target.value))}>
+    <select className={s.todo} value={value} onChange={e => onChange((e.target.value))}>
       <option value=''>{defaultValue}</option>
       {options.map((opt) => {
         return (
@@ -17,11 +18,3 @@ const Select = ({ options, defaultValue, value, onChange }) => {
 
 export default Select;
 
-// <select>
-//       {/* <option disabled value={defaultValue}>
-//         {defaultValue}
-//       </option> */}
-//       {options.map((opt) => {
-//         <option key={opt.value} value={opt.value}>{opt.name}</option>;
-//       })}
-//     </select>

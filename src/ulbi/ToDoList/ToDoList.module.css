@@ -1,0 +1,15 @@
+.todo {
+  margin: 5% auto;
+  padding: 10px;
+  min-width: 100%;
+  border: 1px white solid;
+  border-radius: 5px;
+  background-color: rgb(252, 121, 227);
+  display: flex;
+  flex-direction: column;
+}
+
+.todo__list {
+  display: flex;
+  flex-direction: column;
+}

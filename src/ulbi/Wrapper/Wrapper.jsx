@@ -3,6 +3,7 @@ import s from "./Wrapper.module.css";
 import ToDoInput from "../ToDoInput/ToDoInput";
 import Select from "../Select/Select";
 import { Finder } from "./../Finder/Finder";
+import { ToDoList } from "./../ToDoList/ToDoList";
 
 const Wrapper = (props) => {
   const [currentValue, setCurrentValue] = useState("");
@@ -53,30 +54,34 @@ const Wrapper = (props) => {
     setTodos([...todos.filter((item) => id !== item.id)]);
   };
 
-  console.log(sortedAndSearchedTodos)
+  console.log(sortedAndSearchedTodos);
 
   return (
     <div className={s.wrapper}>
-      <Select
-        value={selectedSort}
-        onChange={setSelectedSort}
-        defaultValue="Sort..."
-        options={[
-          {
-            value: "value",
-            name: "by desc",
-          },
-        ]}
-      />
-      <Finder value={searchQuery} onChange={setSearchQuery} />
-      <ToDoInput
-        currentValue={currentValue}
-        todos={sortedAndSearchedTodos}
-        handleChangeInput={handleChangeInput}
-        handleAddTask={handleAddTask}
-        handleKeyDownEnter={handleKeyDownEnter}
-        handleDeleteTask={handleDeleteTask}
-      />
+      <div className={s.wrapper__inner}>
+        <Select
+          value={selectedSort}
+          onChange={setSelectedSort}
+          defaultValue="Sort..."
+          options={[
+            {
+              value: "value",
+              name: "by desc",
+            },
+          ]}
+        />
+        <Finder value={searchQuery} onChange={setSearchQuery} />
+        <ToDoInput
+          currentValue={currentValue}
+          handleChangeInput={handleChangeInput}
+          handleAddTask={handleAddTask}
+          handleKeyDownEnter={handleKeyDownEnter}
+        />
+        <ToDoList
+          todos={sortedAndSearchedTodos}
+          handleDeleteTask={handleDeleteTask}
+        />
+      </div>
     </div>
   );
 };
