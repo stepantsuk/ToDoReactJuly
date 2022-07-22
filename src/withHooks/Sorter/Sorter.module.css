@@ -1,0 +1,8 @@
+.todo {
+  margin: 5% auto 0;
+  min-width: 100%;
+  border: 1px white solid;
+  border-radius: 5px;
+  background-color: rgb(252, 121, 171);
+  color: white;
+}

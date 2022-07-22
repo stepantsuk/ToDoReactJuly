@@ -1,12 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import css from "./Wrapper.module.css";
-import { ToDoItem } from "../ToDoItem";
+import { ToDoInput } from "./../ToDoInput";
+import { ToDoList } from "./../ToDoList";
+import { Finder } from "./../Finder";
+import { Sorter } from "./../Sorter";
 
 export const Wrapper = (props) => {
   const [currentValue, setCurrentValue] = useState("");
+  //const [todos, setTodos] = useState([]);
   const [todos, setTodos] = useState(() => {
     return JSON.parse(localStorage.getItem("todos")) || [];
   });
+  const [selectedSort, setSelectedSort] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   // const toFilterTodos = () => {
   //   todos.length &&
@@ -17,48 +23,94 @@ export const Wrapper = (props) => {
   //   console.log("toFilterTodos", todos);
   // };
 
-  const filterTasks = (arr) => {
-    return [
-      ...arr.filter((item) => item.complete === false),
-      ...arr.filter((item) => item.complete === true),
-    ];
-  };
+  const sortedTodos = useMemo(() => {
+    console.log("sortedTodos");
+    switch (selectedSort) {
+      case "value":
+        return [...todos].sort((a, b) => {
+          return a[selectedSort].localeCompare(b[selectedSort]);
+        });
+      case "id":
+        return [...todos].sort((a, b) => {
+          return a[selectedSort] - b[selectedSort];
+        });
+      case "complete":
+        return [
+          ...todos.filter((item) => item.complete === false),
+          ...todos.filter((item) => item.complete === true),
+        ];
+      default:
+        return todos;
+    }
+  }, [todos, selectedSort]);
 
-  const handleChangeInput = (e) => {
+  const sortedAndSearchedTodos = useMemo(() => {
+    console.log("sortedAndSearchedTodos");
+    return sortedTodos.filter((elem) =>
+      elem.value.toLowerCase().includes(searchQuery)
+    );
+  }, [searchQuery, sortedTodos]);
+
+  // const filterTasks = (arr) => {
+  //   return [
+  //     ...arr.filter((item) => item.complete === false),
+  //     ...arr.filter((item) => item.complete === true),
+  //   ];
+  // };
+
+  const handleChangeInput = useCallback((e) => {
     setCurrentValue(e.currentTarget.value);
-  };
+  }, []);
 
-  const handleAddTask = () => {
+  const addTask = () => {
     if (currentValue) {
       const newTodo = {
         id: Math.round(Math.random() * 10000),
         value: currentValue,
         complete: false,
       };
-      setTodos([newTodo, ...todos]);
+      setTodos((t) => [newTodo, ...t]);
     }
     setCurrentValue("");
   };
 
-  const handleKeyDownEnter = (e) => {
-    if (e.key === "Enter") {
-      handleAddTask();
-    }
-  };
+  const handleAddTask = useCallback(
+    () => {
+      console.log("handleAddTask", currentValue);
+      addTask();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentValue]
+  );
 
-  const handleDeleteTask = (id) => {
-    setTodos([...todos.filter((item) => id !== item.id)]);
-  };
+  const handleKeyDownEnter = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        console.log("Enter", currentValue);
+        addTask();
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentValue]
+  );
 
-  const handleToggle = (id) => {
-    setTodos(
-      filterTasks(
+  const handleDeleteTask = useCallback(
+    (id) => {
+      setTodos([...todos.filter((item) => id !== item.id)]);
+    },
+    [todos]
+  );
+
+  const handleToggle = useCallback(
+    (id) => {
+      setTodos(
         todos.map((item) =>
           item.id === id ? { ...item, complete: !item.complete } : item
         )
-      )
-    );
-  };
+      );
+    },
+    [todos]
+  );
 
   useEffect(() => {
     localStorage.setItem("todos", JSON.stringify(todos));
@@ -66,35 +118,21 @@ export const Wrapper = (props) => {
 
   return (
     <div className={css.wrapper}>
-      <div className={css.todo}>
-        <h1 className={css.todo__title}>Мой список дел</h1>
-        <div className={css.todo__input}>
-          <input
-            type="text"
-            className={css.input__task}
-            value={currentValue}
-            onKeyPress={handleKeyDownEnter}
-            onChange={handleChangeInput}
-          />
-          <button className={css.add__task} onClick={handleAddTask}>
-            Добавить
-          </button>
-        </div>
-        <ul className={css.todo__list}>
-          {todos.map((item) => (
-            <ToDoItem
-              key={item.id}
-              task={item}
-              handleDeleteTask={handleDeleteTask}
-              handleToggle={handleToggle}
-            />
-          ))}
-        </ul>
-        <div>
-          Итого: <span>{todos.length}</span>
-        </div>
+      <div className={css.wrapper__inner}>
+        <Sorter value={selectedSort} onChange={setSelectedSort} />
+        <Finder value={searchQuery} onChange={setSearchQuery} />
+        <ToDoInput
+          currentValue={currentValue}
+          handleKeyDownEnter={handleKeyDownEnter}
+          handleChangeInput={handleChangeInput}
+          handleAddTask={handleAddTask}
+        />
+        <ToDoList
+          todos={sortedAndSearchedTodos}
+          handleDeleteTask={handleDeleteTask}
+          handleToggle={handleToggle}
+        />
       </div>
     </div>
   );
 };
-
