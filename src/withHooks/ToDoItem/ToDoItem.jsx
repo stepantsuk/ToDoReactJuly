@@ -1,4 +1,5 @@
 import React from "react";
+import {shape, string, number, bool, func} from 'prop-types';
 import css from "./ToDoItem.module.css";
 
 export const ToDoItem = React.memo(({ task, handleDeleteTask, handleToggle }) => {
@@ -30,6 +31,20 @@ export const ToDoItem = React.memo(({ task, handleDeleteTask, handleToggle }) =>
   );
 });
 
+ToDoItem.propTypes ={
+  task: shape({
+    value: string.isRequired,
+    id: number.isRequired,
+    complete: bool,
+  }).isRequired,
+  handleDeleteTask: func.isRequired,
+  handleToggle: func.isRequired, 
+};
+
+ToDoItem.defaultProps = {
+  handleDeleteTask(){},
+  handleToggle(){},
+};
 
 
 // export const ToDoItem = ({ task, handleDeleteTask, handleToggle }) => {

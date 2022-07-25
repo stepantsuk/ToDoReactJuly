@@ -1,18 +1,21 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import css from "./Wrapper.module.css";
 import { ToDoInput } from "./../ToDoInput";
 import { ToDoList } from "./../ToDoList";
 import { Finder } from "./../Finder";
 import { Sorter } from "./../Sorter";
+import { sortTodos} from "./../units/sortTodos"
 
 export const Wrapper = (props) => {
   const [currentValue, setCurrentValue] = useState("");
-  //const [todos, setTodos] = useState([]);
-  const [todos, setTodos] = useState(() => {
-    return JSON.parse(localStorage.getItem("todos")) || [];
-  });
+  const [todos, setTodos] = useState([]);
+  // const [todos, setTodos] = useState(() => {
+  //   return JSON.parse(localStorage.getItem("todos")) || [];
+  // });
   const [selectedSort, setSelectedSort] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+
+  const isInitialMount = useRef(true);
 
   // const toFilterTodos = () => {
   //   todos.length &&
@@ -24,28 +27,12 @@ export const Wrapper = (props) => {
   // };
 
   const sortedTodos = useMemo(() => {
-    console.log("sortedTodos");
-    switch (selectedSort) {
-      case "value":
-        return [...todos].sort((a, b) => {
-          return a[selectedSort].localeCompare(b[selectedSort]);
-        });
-      case "id":
-        return [...todos].sort((a, b) => {
-          return a[selectedSort] - b[selectedSort];
-        });
-      case "complete":
-        return [
-          ...todos.filter((item) => item.complete === false),
-          ...todos.filter((item) => item.complete === true),
-        ];
-      default:
-        return todos;
-    }
+    //console.log("sortedTodos");
+    return sortTodos(selectedSort, todos);
   }, [todos, selectedSort]);
 
   const sortedAndSearchedTodos = useMemo(() => {
-    console.log("sortedAndSearchedTodos");
+    //console.log("sortedAndSearchedTodos");
     return sortedTodos.filter((elem) =>
       elem.value.toLowerCase().includes(searchQuery)
     );
@@ -76,7 +63,7 @@ export const Wrapper = (props) => {
 
   const handleAddTask = useCallback(
     () => {
-      console.log("handleAddTask", currentValue);
+      //console.log("handleAddTask", currentValue);
       addTask();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -94,27 +81,34 @@ export const Wrapper = (props) => {
     [currentValue]
   );
 
-  const handleDeleteTask = useCallback(
-    (id) => {
-      setTodos([...todos.filter((item) => id !== item.id)]);
-    },
-    [todos]
-  );
+  const handleDeleteTask = useCallback((id) => {
+    setTodos((prevTodos) => [...prevTodos.filter((item) => id !== item.id)]);
+  }, []);
 
-  const handleToggle = useCallback(
-    (id) => {
-      setTodos(
-        todos.map((item) =>
-          item.id === id ? { ...item, complete: !item.complete } : item
-        )
-      );
-    },
-    [todos]
-  );
+  const handleToggle = useCallback((id) => {
+    setTodos((prevTodos) =>
+      prevTodos.map((item) =>
+        item.id === id ? { ...item, complete: !item.complete } : item
+      )
+    );
+  }, []);
+
+  // useEffect(() => {
+  //   localStorage.setItem("todos", JSON.stringify(todos));
+  // }, [todos]);
 
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      setTodos(JSON.parse(localStorage.getItem("todos")) || []);
+    } else {
+      localStorage.setItem("todos", JSON.stringify(todos));
+    }
   }, [todos]);
+
+  // useEffect(() => {
+  //   setTodos(JSON.parse(localStorage.getItem("todos")));
+  // }, []);
 
   return (
     <div className={css.wrapper}>

@@ -1,6 +1,7 @@
 import React from "react";
+import {arrayOf, object, func} from 'prop-types';
 import css from "./ToDoList.module.css";
-import { ToDoItem } from "../ToDoItem";
+import {ToDoItem} from "../ToDoItem";
 
 // export const ToDoList = (props) => {
 
@@ -28,15 +29,15 @@ import { ToDoItem } from "../ToDoItem";
 //   }, [props.todos]);
 // };
 
-export const ToDoList = React.memo((props) => {
-  const innerItems = props.todos.map((item) => {
+export const ToDoList = React.memo(({todos, handleDeleteTask, handleToggle}) => {
+  const innerItems = todos.map((item) => {
     console.log("innerItems");
     return (
       <ToDoItem
         key={item.id}
         task={item}
-        handleToggle={props.handleToggle}
-        handleDeleteTask={props.handleDeleteTask}
+        handleToggle={handleToggle}
+        handleDeleteTask={handleDeleteTask}
       />
     );
   });
@@ -44,14 +45,25 @@ export const ToDoList = React.memo((props) => {
   return (
     <div className={css.todo}>
       <ul className={css.todo__list}>{innerItems}</ul>
-      {props.todos.length ? (
-        <span>Итого:{props.todos.length}</span>
+      {todos.length ? (
+        <span>Итого:{todos.length}</span>
       ) : (
         "Делов нет"
       )}
     </div>
   );
 });
+
+ToDoList.propTypes = {
+  todos: arrayOf(object).isRequired,
+  handleDeleteTask: func.isRequired,
+  handleToggle: func.isRequired, 
+};
+
+ToDoList.defaultProps = {
+  handleDeleteTask(){},
+  handleToggle(){},
+};
 
 // export const ToDoList = (props) => {
 //   return useMemo(() => {
