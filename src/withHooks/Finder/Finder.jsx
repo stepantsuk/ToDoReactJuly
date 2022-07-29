@@ -12,7 +12,6 @@ export const Finder = React.memo((props) => {
           className={css.input__task}
           placeholder="find..."
           value={props.value}
-          // onKeyPress={(e) => props.handleKeyDownEnter(e, props.currentValue)}
           onChange={(e) => props.onChange(e.currentTarget.value)}
         />
       </div>
